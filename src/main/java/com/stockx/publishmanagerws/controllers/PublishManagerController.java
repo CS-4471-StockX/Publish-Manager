@@ -11,7 +11,7 @@ public class PublishManagerController {
     private PublishManagerService publishManagerService;
 
     @PostMapping(value = "/publish")
-    public void publishStockListing(@RequestParam("topic") String topic, @RequestBody String message) {
+    public void publishMessage(@RequestParam("topic") String topic, @RequestBody String message) {
         publishManagerService.publishMessage(topic, message);
     }
 }
