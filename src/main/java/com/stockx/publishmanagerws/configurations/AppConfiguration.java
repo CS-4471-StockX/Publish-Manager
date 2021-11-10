@@ -29,7 +29,7 @@ public class AppConfiguration {
     private static final int mqttPort = 8883;
 
     @Bean
-    public MqttClientConnection mqttClientConnection () {
+    public MqttClientConnection mqttClientConnection() {
         String clientId = "test-" + UUID.randomUUID();
 
         EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
