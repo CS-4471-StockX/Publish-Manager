@@ -1,7 +1,6 @@
 package com.stockx.publishmanagerws.services;
 
-import com.stockx.publishmanagerws.Stock;
-import com.stockx.publishmanagerws.mqtt.ClientConnection;
+import com.stockx.publishmanagerws.adapters.MqttAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,10 +8,11 @@ import org.springframework.stereotype.Service;
 public class PublishManagerService {
 
     @Autowired
-    private ClientConnection clientConnection;
+    MqttAdapter mqttAdapter;
 
-    public void publishStockListing(String topic, String message) {
-        clientConnection.publish(topic, message);
+    public void publishMessage(String topic, String message) {
+        mqttAdapter.publish(topic, message);
     }
+
 
 }
