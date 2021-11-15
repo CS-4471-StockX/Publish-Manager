@@ -35,6 +35,15 @@ public class AppConfiguration {
     @Value("${mqtt.client.endpoint}")
     private String mqttEndpoint;
 
+    @Value("${amazon.dynamodb.endpoint}")
+    private String amazonDynamoDBEndpoint;
+
+    @Value("${amazon.aws.accesskey}")
+    private String amazonAWSAccessKey;
+
+    @Value("${amazon.aws.secretkey}")
+    private String amazonAWSSecretKey;
+
     private static final int mqttPort = 8883;
 
     @Bean
