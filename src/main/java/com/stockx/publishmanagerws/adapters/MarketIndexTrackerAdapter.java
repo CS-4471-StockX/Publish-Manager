@@ -8,7 +8,7 @@ public class MarketIndexTrackerAdapter {
 
     @Autowired
     private RestTemplate restTemplate;
-    private static final String BASE_URL = "";
+    private static final String BASE_URL = "https://market-index-tracker.stockx.software";
 
     public String marketIndex(String ticker){
         String url = UriComponentsBuilder.fromUriString(BASE_URL).path("/market-index")
@@ -18,7 +18,7 @@ public class MarketIndexTrackerAdapter {
     }
 
     public String historicalMarketIndex(String ticker){
-        String url = UriComponentsBuilder.fromUriString(BASE_URL).path("historical/market-index-price")
+        String url = UriComponentsBuilder.fromUriString(BASE_URL).path("/historical/market-index-price")
                 .queryParam("ticker", ticker).build().toUriString();
 
         return restTemplate.getForObject(url, String.class);

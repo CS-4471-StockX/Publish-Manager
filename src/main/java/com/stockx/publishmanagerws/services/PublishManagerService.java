@@ -43,7 +43,7 @@ public class PublishManagerService {
             }
         }
 
-        //Code for Market Index Updates once that service is added to AWS.
+        //Publishing Market INdex data, currently having issues with external API being exhausted.
         /*List<Topic> marketIndexList = topicRepository.getTopicByService("market-index-tracker-ws");
 
         for(Topic topic : marketIndexList){
@@ -57,7 +57,7 @@ public class PublishManagerService {
         }*/
     }
 
-    @Scheduled(cron = "0 * 10-16 * * *")
+    @Scheduled(cron = "0 * 15-21 * * *")
     private void updateMinutes(){
         List<Topic> liveStockList = topicRepository.getTopicByService("live-stock-tracker-ws");
 
@@ -67,7 +67,7 @@ public class PublishManagerService {
 
     }
 
-    @Scheduled(cron = "0 0 10-16 * * *")
+    @Scheduled(cron = "0 0 15-21 * * *")
     private void updateHours(){
         List<Topic> liveStockList = topicRepository.getTopicByService("live-stock-tracker-ws");
 
@@ -76,7 +76,7 @@ public class PublishManagerService {
         }
     }
 
-    @Scheduled(cron = "0 0 10 * * *")
+    @Scheduled(cron = "0 0 15 * * *")
     private void updateDays(){
         List<Topic> liveStockList = topicRepository.getTopicByService("live-stock-tracker-ws");
 
