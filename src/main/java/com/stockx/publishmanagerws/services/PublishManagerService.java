@@ -81,7 +81,7 @@ public class PublishManagerService {
         List<Topic> liveStockList = topicRepository.getTopicByService("live-stock-tracker-ws");
 
         for(Topic topic : liveStockList){
-            liveStockTrackerAdapter.updateHours(topic.getSymbol());
+            liveStockTrackerAdapter.updateDays(topic.getSymbol());
         }
     }
 
