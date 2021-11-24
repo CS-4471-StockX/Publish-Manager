@@ -1,8 +1,9 @@
+com/stockx/publishmanagerws/controllers/PublishManagerController.class
+com/stockx/publishmanagerws/PublishManagerWsApplication.class
 com/stockx/publishmanagerws/repository/TopicRepository.class
 com/stockx/publishmanagerws/adapters/MqttAdapter.class
 com/stockx/publishmanagerws/configurations/AppConfiguration.class
 com/stockx/publishmanagerws/adapters/MarketIndexTrackerAdapter.class
 com/stockx/publishmanagerws/services/PublishManagerService.class
 com/stockx/publishmanagerws/entity/Topic.class
-com/stockx/publishmanagerws/PublishManagerWsApplication.class
 com/stockx/publishmanagerws/adapters/LiveStockTrackerAdapter.class
