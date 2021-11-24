@@ -9,9 +9,11 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.stockx.publishmanagerws.adapters.LiveStockTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MarketIndexTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MqttAdapter;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.web.client.RestTemplate;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
@@ -19,18 +21,22 @@ import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Configuration
 public class AppConfiguration {
     @Value("${mqtt.client.rootCaPath}")
-    private String mqttRootCaPath;
+    private Resource mqttRootCaPath;
 
     @Value("${mqtt.client.certPath}")
-    private String mqttCertPath;
+    private Resource mqttCertPath;
 
     @Value("${mqtt.client.keyPath}")
-    private String mqttKeyPath;
+    private Resource mqttKeyPath;
 
     @Value("${mqtt.client.endpoint}")
     private String mqttEndpoint;
@@ -53,16 +59,30 @@ public class AppConfiguration {
         EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
         HostResolver resolver = new HostResolver(eventLoopGroup);
         ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-        AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(mqttCertPath, mqttKeyPath);
-        builder.withCertificateAuthorityFromPath(null, mqttRootCaPath);
-
+        AwsIotMqttConnectionBuilder builder = null;
+        try {
+            builder = AwsIotMqttConnectionBuilder.newMtlsBuilder(IOUtils.toString(mqttCertPath.getInputStream(), StandardCharsets.UTF_8), IOUtils.toString(mqttKeyPath.getInputStream(), StandardCharsets.UTF_8));
+            builder.withCertificateAuthority(IOUtils.toString(mqttRootCaPath.getInputStream(), StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         builder.withBootstrap(clientBootstrap)
                 .withClientId(clientId)
                 .withEndpoint(mqttEndpoint)
                 .withPort((short) mqttPort)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
-        return builder.build();
+
+        MqttClientConnection mqttClientConnection = builder.build();
+        CompletableFuture<Boolean> connected = mqttClientConnection.connect();
+
+        try {
+            boolean sessionPresent = connected.get();
+            System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return mqttClientConnection;
     }
 
     @Bean
@@ -70,24 +90,23 @@ public class AppConfiguration {
         return new MqttAdapter(mqttClientConnection);
     }
 
-
     @Bean
     public DynamoDBMapper dynamoDBMapper() {
         return new DynamoDBMapper(buildAmazonDynamoDB());
     }
 
     @Bean
-    public LiveStockTrackerAdapter liveStockTrackerAdapter(){
+    public LiveStockTrackerAdapter liveStockTrackerAdapter() {
         return new LiveStockTrackerAdapter();
     }
 
     @Bean
-    public MarketIndexTrackerAdapter marketIndexTrackerAdapter(){
+    public MarketIndexTrackerAdapter marketIndexTrackerAdapter() {
         return new MarketIndexTrackerAdapter();
     }
 
     @Bean
-    public RestTemplate restTemplate(){
+    public RestTemplate restTemplate() {
         return new RestTemplate();
     }
 
