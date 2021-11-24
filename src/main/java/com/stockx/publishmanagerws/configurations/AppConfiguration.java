@@ -24,6 +24,8 @@ import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Configuration
 public class AppConfiguration {
@@ -70,7 +72,17 @@ public class AppConfiguration {
                 .withPort((short) mqttPort)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
-        return builder.build();
+
+        MqttClientConnection mqttClientConnection = builder.build();
+        CompletableFuture<Boolean> connected = mqttClientConnection.connect();
+
+        try {
+            boolean sessionPresent = connected.get();
+            System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return mqttClientConnection;
     }
 
     @Bean
@@ -84,17 +96,17 @@ public class AppConfiguration {
     }
 
     @Bean
-    public LiveStockTrackerAdapter liveStockTrackerAdapter(){
+    public LiveStockTrackerAdapter liveStockTrackerAdapter() {
         return new LiveStockTrackerAdapter();
     }
 
     @Bean
-    public MarketIndexTrackerAdapter marketIndexTrackerAdapter(){
+    public MarketIndexTrackerAdapter marketIndexTrackerAdapter() {
         return new MarketIndexTrackerAdapter();
     }
 
     @Bean
-    public RestTemplate restTemplate(){
+    public RestTemplate restTemplate() {
         return new RestTemplate();
     }
 
