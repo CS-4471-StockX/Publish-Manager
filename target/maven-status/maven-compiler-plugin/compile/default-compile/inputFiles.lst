@@ -6,3 +6,4 @@
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/adapters/MqttAdapter.java
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/repository/TopicRepository.java
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/PublishManagerWsApplication.java
+/home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/controllers/PublishManagerController.java
