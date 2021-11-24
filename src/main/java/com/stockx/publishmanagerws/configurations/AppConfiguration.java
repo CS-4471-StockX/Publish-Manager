@@ -10,9 +10,11 @@ import com.stockx.publishmanagerws.adapters.CurrencyTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.LiveStockTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MarketIndexTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MqttAdapter;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.web.client.RestTemplate;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
@@ -20,18 +22,20 @@ import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Configuration
 public class AppConfiguration {
     @Value("${mqtt.client.rootCaPath}")
-    private String mqttRootCaPath;
+    private Resource mqttRootCaPath;
 
     @Value("${mqtt.client.certPath}")
-    private String mqttCertPath;
+    private Resource mqttCertPath;
 
     @Value("${mqtt.client.keyPath}")
-    private String mqttKeyPath;
+    private Resource mqttKeyPath;
 
     @Value("${mqtt.client.endpoint}")
     private String mqttEndpoint;
@@ -54,9 +58,13 @@ public class AppConfiguration {
         EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
         HostResolver resolver = new HostResolver(eventLoopGroup);
         ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-        AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(mqttCertPath, mqttKeyPath);
-        builder.withCertificateAuthorityFromPath(null, mqttRootCaPath);
-
+        AwsIotMqttConnectionBuilder builder = null;
+        try {
+            builder = AwsIotMqttConnectionBuilder.newMtlsBuilder(IOUtils.toString(mqttCertPath.getInputStream(), StandardCharsets.UTF_8), IOUtils.toString(mqttKeyPath.getInputStream(), StandardCharsets.UTF_8));
+            builder.withCertificateAuthority(IOUtils.toString(mqttRootCaPath.getInputStream(), StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         builder.withBootstrap(clientBootstrap)
                 .withClientId(clientId)
                 .withEndpoint(mqttEndpoint)
@@ -70,7 +78,6 @@ public class AppConfiguration {
     public MqttAdapter mqttAdapter(MqttClientConnection mqttClientConnection) {
         return new MqttAdapter(mqttClientConnection);
     }
-
 
     @Bean
     public DynamoDBMapper dynamoDBMapper() {
