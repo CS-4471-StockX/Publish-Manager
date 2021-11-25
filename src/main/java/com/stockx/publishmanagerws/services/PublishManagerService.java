@@ -1,5 +1,6 @@
 package com.stockx.publishmanagerws.services;
 
+import com.stockx.publishmanagerws.adapters.CurrencyTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.LiveStockTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MarketIndexTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MqttAdapter;
@@ -27,6 +28,9 @@ public class PublishManagerService {
     @Autowired
     MarketIndexTrackerAdapter marketIndexTrackerAdapter;
 
+    @Autowired
+    CurrencyTrackerAdapter currencyTrackerAdapter;
+
     @Scheduled(fixedDelay = 30000)
     void publisherUpdate(){
 
@@ -43,7 +47,7 @@ public class PublishManagerService {
             }
         }
 
-        //Publishing Market INdex data, currently having issues with external API being exhausted.
+        //Publishing Market Index data, currently having issues with external API being exhausted.
         /*List<Topic> marketIndexList = topicRepository.getTopicByService("market-index-tracker-ws");
 
         for(Topic topic : marketIndexList){
@@ -67,6 +71,17 @@ public class PublishManagerService {
 
     }
 
+    @Scheduled(cron = "0 0 * * * *")
+    private void updateCurrency(){
+        List<Topic> currencyList = topicRepository.getTopicByService("currency-tracker-ws");
+
+        for(Topic topic : currencyList){
+            String msg = currencyTrackerAdapter
+                    .convert(topic.getSymbol().split("_")[0], topic.getSymbol().split("_")[1]);
+            publishMessage(topic.getSymbol(), msg);
+        }
+    }
+
     @Scheduled(cron = "0 0 15-21 * * *")
     private void updateHours(){
         List<Topic> liveStockList = topicRepository.getTopicByService("live-stock-tracker-ws");
@@ -74,6 +89,7 @@ public class PublishManagerService {
         for(Topic topic : liveStockList){
             liveStockTrackerAdapter.updateHours(topic.getSymbol());
         }
+
     }
 
     @Scheduled(cron = "0 0 15 * * *")
@@ -82,6 +98,14 @@ public class PublishManagerService {
 
         for(Topic topic : liveStockList){
             liveStockTrackerAdapter.updateDays(topic.getSymbol());
+        }
+
+        List<Topic> currencyList = topicRepository.getTopicByService("currency-tracker-ws");
+
+        for(Topic topic : currencyList){
+            String msg = currencyTrackerAdapter
+                    .graph(topic.getSymbol().split("_")[0], topic.getSymbol().split("_")[1]);
+            publishMessage(topic.getSymbol(), msg);
         }
     }
 
