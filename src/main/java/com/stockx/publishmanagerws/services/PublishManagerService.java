@@ -1,5 +1,6 @@
 package com.stockx.publishmanagerws.services;
 
+import com.stockx.publishmanagerws.adapters.IndustryStockTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.LiveStockTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MarketIndexTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MqttAdapter;
@@ -16,7 +17,7 @@ import java.util.List;
 public class PublishManagerService {
 
     @Autowired
-    MqttAdapter mqttAdapter;
+    private MqttAdapter mqttAdapter;
 
     @Autowired
     private TopicRepository topicRepository;
@@ -25,7 +26,10 @@ public class PublishManagerService {
     private LiveStockTrackerAdapter liveStockTrackerAdapter;
 
     @Autowired
-    MarketIndexTrackerAdapter marketIndexTrackerAdapter;
+    private MarketIndexTrackerAdapter marketIndexTrackerAdapter;
+
+    @Autowired
+    private IndustryStockTrackerAdapter industryStockTrackerAdapter;
 
     @Scheduled(fixedDelay = 30000)
     void publisherUpdate(){
@@ -55,6 +59,22 @@ public class PublishManagerService {
                 publishMessage(topic.getSymbol(), msg);
             }
         }*/
+
+    }
+
+    @Scheduled(fixedDelay = 30000)
+    public void updateIndustryStockListings() {
+        publishMessage("Energy", industryStockTrackerAdapter.getIndustryStockBySector("Energy"));
+        publishMessage("Materials", industryStockTrackerAdapter.getIndustryStockBySector("Materials"));
+        publishMessage("Industrials", industryStockTrackerAdapter.getIndustryStockBySector("Industrials"));
+        publishMessage("Utilities", industryStockTrackerAdapter.getIndustryStockBySector("Utilities"));
+        publishMessage("Healthcare", industryStockTrackerAdapter.getIndustryStockBySector("Healthcare"));
+        publishMessage("Financials", industryStockTrackerAdapter.getIndustryStockBySector("Financials"));
+        publishMessage("ConsumerDiscretionary", industryStockTrackerAdapter.getIndustryStockBySector("ConsumerDiscretionary"));
+        publishMessage("ConsumerStaples", industryStockTrackerAdapter.getIndustryStockBySector("ConsumerStaples"));
+        publishMessage("InformationTechnology", industryStockTrackerAdapter.getIndustryStockBySector("InformationTechnology"));
+        publishMessage("CommunicationServices", industryStockTrackerAdapter.getIndustryStockBySector("CommunicationServices"));
+        publishMessage("RealEstate", industryStockTrackerAdapter.getIndustryStockBySector("RealEstate"));
     }
 
     @Scheduled(cron = "0 * 15-21 * * *")
