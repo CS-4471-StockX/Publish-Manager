@@ -2,6 +2,7 @@
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/configurations/AppConfiguration.java
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/adapters/LiveStockTrackerAdapter.java
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/adapters/MarketIndexTrackerAdapter.java
+/home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/adapters/IndustryStockTrackerAdapter.java
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/entity/Topic.java
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/adapters/MqttAdapter.java
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/repository/TopicRepository.java
