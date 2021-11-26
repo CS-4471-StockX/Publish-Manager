@@ -49,7 +49,7 @@ public class PublishManagerService {
 
     }
 
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 3600000)
     public void updateMarketIndexListings() {
         //Publishing Market Index data, currently having issues with external API being exhausted.
         List<Topic> marketIndexList = topicRepository.getTopicByService("market-index-tracker-ws");
