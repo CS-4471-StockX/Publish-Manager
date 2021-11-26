@@ -32,7 +32,7 @@ public class PublishManagerService {
     private IndustryStockTrackerAdapter industryStockTrackerAdapter;
 
     @Scheduled(fixedDelay = 30000)
-    void publisherUpdate(){
+    void updateSubscribedStocks(){
 
         List<Topic> liveStockList = topicRepository.getTopicByService("live-stock-tracker-ws");
 
@@ -47,22 +47,25 @@ public class PublishManagerService {
             }
         }
 
-        //Publishing Market INdex data, currently having issues with external API being exhausted.
-        /*List<Topic> marketIndexList = topicRepository.getTopicByService("market-index-tracker-ws");
-
-        for(Topic topic : marketIndexList){
-            if(topic.getNumOfSubscribers() > 0) {
-                String msg = marketIndexTrackerAdapter.marketIndex(topic.getSymbol());
-                publishMessage(topic.getSymbol(), msg);
-
-                msg = marketIndexTrackerAdapter.historicalMarketIndex(topic.getSymbol());
-                publishMessage(topic.getSymbol(), msg);
-            }
-        }*/
-
     }
 
     @Scheduled(fixedDelay = 30000)
+    public void updateMarketIndexListings() {
+        //Publishing Market Index data, currently having issues with external API being exhausted.
+        List<Topic> marketIndexList = topicRepository.getTopicByService("market-index-tracker-ws");
+
+        for(Topic topic : marketIndexList){
+            if(topic.getNumOfSubscribers() > 0) {
+                String msg = marketIndexTrackerAdapter.getMarketIndexQuote(topic.getSymbol());
+                publishMessage(topic.getSymbol(), msg);
+
+                msg = marketIndexTrackerAdapter.getHistoricalMarketIndex(topic.getSymbol());
+                publishMessage(topic.getSymbol(), msg);
+            }
+        }
+    }
+
+    @Scheduled(initialDelay = 10000, fixedDelay = 30000)
     public void updateIndustryStockListings() {
         publishMessage("Energy", industryStockTrackerAdapter.getIndustryStockBySector("Energy"));
         publishMessage("Materials", industryStockTrackerAdapter.getIndustryStockBySector("Materials"));
