@@ -10,14 +10,14 @@ public class MarketIndexTrackerAdapter {
     private RestTemplate restTemplate;
     private static final String BASE_URL = "https://market-index-tracker.stockx.software";
 
-    public String marketIndex(String ticker){
+    public String getMarketIndexQuote(String ticker){
         String url = UriComponentsBuilder.fromUriString(BASE_URL).path("/market-index")
                 .queryParam("ticker", ticker).build().toUriString();
 
         return restTemplate.getForObject(url, String.class);
     }
 
-    public String historicalMarketIndex(String ticker){
+    public String getHistoricalMarketIndex(String ticker){
         String url = UriComponentsBuilder.fromUriString(BASE_URL).path("/historical/market-index-price")
                 .queryParam("ticker", ticker).build().toUriString();
 
