@@ -1,4 +1,5 @@
 com/stockx/publishmanagerws/controllers/PublishManagerController.class
+com/stockx/publishmanagerws/adapters/IndustryStockTrackerAdapter.class
 com/stockx/publishmanagerws/PublishManagerWsApplication.class
 com/stockx/publishmanagerws/repository/TopicRepository.class
 com/stockx/publishmanagerws/adapters/MqttAdapter.class
