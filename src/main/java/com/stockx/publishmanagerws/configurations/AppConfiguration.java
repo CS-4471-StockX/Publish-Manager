@@ -6,7 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.stockx.publishmanagerws.adapters.CurrencyTrackerAdapter;
+import com.stockx.publishmanagerws.adapters.IndustryStockTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.LiveStockTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MarketIndexTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MqttAdapter;
@@ -92,6 +92,11 @@ public class AppConfiguration {
     }
 
     @Bean
+    public IndustryStockTrackerAdapter industryStockTrackerAdapter() {
+        return new IndustryStockTrackerAdapter();
+    }
+
+    @Bean
     public DynamoDBMapper dynamoDBMapper() {
         return new DynamoDBMapper(buildAmazonDynamoDB());
     }
@@ -104,10 +109,6 @@ public class AppConfiguration {
     @Bean
     public MarketIndexTrackerAdapter marketIndexTrackerAdapter() {
         return new MarketIndexTrackerAdapter();
-    }
-    @Bean
-    public CurrencyTrackerAdapter currencyTrackerAdapter(){
-        return new CurrencyTrackerAdapter();
     }
 
     @Bean

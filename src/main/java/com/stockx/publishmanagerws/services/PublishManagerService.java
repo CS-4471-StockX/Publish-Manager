@@ -1,6 +1,6 @@
 package com.stockx.publishmanagerws.services;
 
-import com.stockx.publishmanagerws.adapters.CurrencyTrackerAdapter;
+import com.stockx.publishmanagerws.adapters.IndustryStockTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.LiveStockTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MarketIndexTrackerAdapter;
 import com.stockx.publishmanagerws.adapters.MqttAdapter;
@@ -17,7 +17,7 @@ import java.util.List;
 public class PublishManagerService {
 
     @Autowired
-    MqttAdapter mqttAdapter;
+    private MqttAdapter mqttAdapter;
 
     @Autowired
     private TopicRepository topicRepository;
@@ -26,13 +26,13 @@ public class PublishManagerService {
     private LiveStockTrackerAdapter liveStockTrackerAdapter;
 
     @Autowired
-    MarketIndexTrackerAdapter marketIndexTrackerAdapter;
+    private MarketIndexTrackerAdapter marketIndexTrackerAdapter;
 
     @Autowired
-    CurrencyTrackerAdapter currencyTrackerAdapter;
+    private IndustryStockTrackerAdapter industryStockTrackerAdapter;
 
     @Scheduled(fixedDelay = 30000)
-    void publisherUpdate(){
+    void updateSubscribedStocks(){
 
         List<Topic> liveStockList = topicRepository.getTopicByService("live-stock-tracker-ws");
 
@@ -47,18 +47,37 @@ public class PublishManagerService {
             }
         }
 
+    }
+
+    @Scheduled(fixedDelay = 3600000)
+    public void updateMarketIndexListings() {
         //Publishing Market Index data, currently having issues with external API being exhausted.
-        /*List<Topic> marketIndexList = topicRepository.getTopicByService("market-index-tracker-ws");
+        List<Topic> marketIndexList = topicRepository.getTopicByService("market-index-tracker-ws");
 
         for(Topic topic : marketIndexList){
             if(topic.getNumOfSubscribers() > 0) {
-                String msg = marketIndexTrackerAdapter.marketIndex(topic.getSymbol());
+                String msg = marketIndexTrackerAdapter.getMarketIndexQuote(topic.getSymbol());
                 publishMessage(topic.getSymbol(), msg);
 
-                msg = marketIndexTrackerAdapter.historicalMarketIndex(topic.getSymbol());
+                msg = marketIndexTrackerAdapter.getHistoricalMarketIndex(topic.getSymbol());
                 publishMessage(topic.getSymbol(), msg);
             }
-        }*/
+        }
+    }
+
+    @Scheduled(initialDelay = 10000, fixedDelay = 30000)
+    public void updateIndustryStockListings() {
+        publishMessage("Energy", industryStockTrackerAdapter.getIndustryStockBySector("Energy"));
+        publishMessage("Materials", industryStockTrackerAdapter.getIndustryStockBySector("Materials"));
+        publishMessage("Industrials", industryStockTrackerAdapter.getIndustryStockBySector("Industrials"));
+        publishMessage("Utilities", industryStockTrackerAdapter.getIndustryStockBySector("Utilities"));
+        publishMessage("Healthcare", industryStockTrackerAdapter.getIndustryStockBySector("Healthcare"));
+        publishMessage("Financials", industryStockTrackerAdapter.getIndustryStockBySector("Financials"));
+        publishMessage("ConsumerDiscretionary", industryStockTrackerAdapter.getIndustryStockBySector("ConsumerDiscretionary"));
+        publishMessage("ConsumerStaples", industryStockTrackerAdapter.getIndustryStockBySector("ConsumerStaples"));
+        publishMessage("InformationTechnology", industryStockTrackerAdapter.getIndustryStockBySector("InformationTechnology"));
+        publishMessage("CommunicationServices", industryStockTrackerAdapter.getIndustryStockBySector("CommunicationServices"));
+        publishMessage("RealEstate", industryStockTrackerAdapter.getIndustryStockBySector("RealEstate"));
     }
 
     @Scheduled(cron = "0 * 15-21 * * *")
@@ -71,17 +90,6 @@ public class PublishManagerService {
 
     }
 
-    @Scheduled(cron = "0 0 * * * *")
-    private void updateCurrency(){
-        List<Topic> currencyList = topicRepository.getTopicByService("currency-tracker-ws");
-
-        for(Topic topic : currencyList){
-            String msg = currencyTrackerAdapter
-                    .convert(topic.getSymbol().split("_")[0], topic.getSymbol().split("_")[1]);
-            publishMessage(topic.getSymbol(), msg);
-        }
-    }
-
     @Scheduled(cron = "0 0 15-21 * * *")
     private void updateHours(){
         List<Topic> liveStockList = topicRepository.getTopicByService("live-stock-tracker-ws");
@@ -89,7 +97,6 @@ public class PublishManagerService {
         for(Topic topic : liveStockList){
             liveStockTrackerAdapter.updateHours(topic.getSymbol());
         }
-
     }
 
     @Scheduled(cron = "0 0 15 * * *")
@@ -98,14 +105,6 @@ public class PublishManagerService {
 
         for(Topic topic : liveStockList){
             liveStockTrackerAdapter.updateDays(topic.getSymbol());
-        }
-
-        List<Topic> currencyList = topicRepository.getTopicByService("currency-tracker-ws");
-
-        for(Topic topic : currencyList){
-            String msg = currencyTrackerAdapter
-                    .graph(topic.getSymbol().split("_")[0], topic.getSymbol().split("_")[1]);
-            publishMessage(topic.getSymbol(), msg);
         }
     }
 
