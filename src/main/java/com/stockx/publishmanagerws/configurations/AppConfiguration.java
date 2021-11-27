@@ -6,10 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.stockx.publishmanagerws.adapters.IndustryStockTrackerAdapter;
-import com.stockx.publishmanagerws.adapters.LiveStockTrackerAdapter;
-import com.stockx.publishmanagerws.adapters.MarketIndexTrackerAdapter;
-import com.stockx.publishmanagerws.adapters.MqttAdapter;
+import com.stockx.publishmanagerws.adapters.*;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -110,6 +107,9 @@ public class AppConfiguration {
     public MarketIndexTrackerAdapter marketIndexTrackerAdapter() {
         return new MarketIndexTrackerAdapter();
     }
+
+    @Bean
+    public CurrencyTrackerAdapter currencyTrackerAdapter(){return new CurrencyTrackerAdapter();}
 
     @Bean
     public RestTemplate restTemplate() {

@@ -1,9 +1,6 @@
 package com.stockx.publishmanagerws.services;
 
-import com.stockx.publishmanagerws.adapters.IndustryStockTrackerAdapter;
-import com.stockx.publishmanagerws.adapters.LiveStockTrackerAdapter;
-import com.stockx.publishmanagerws.adapters.MarketIndexTrackerAdapter;
-import com.stockx.publishmanagerws.adapters.MqttAdapter;
+import com.stockx.publishmanagerws.adapters.*;
 import com.stockx.publishmanagerws.entity.Topic;
 import com.stockx.publishmanagerws.repository.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +28,9 @@ public class PublishManagerService {
     @Autowired
     private IndustryStockTrackerAdapter industryStockTrackerAdapter;
 
+    @Autowired
+    private CurrencyTrackerAdapter currencyTrackerAdapter;
+
     @Scheduled(fixedDelay = 30000)
     void updateSubscribedStocks(){
 
@@ -46,7 +46,6 @@ public class PublishManagerService {
 
             }
         }
-
     }
 
     @Scheduled(fixedDelay = 3600000)
@@ -60,6 +59,20 @@ public class PublishManagerService {
                 publishMessage(topic.getSymbol(), msg);
 
                 msg = marketIndexTrackerAdapter.getHistoricalMarketIndex(topic.getSymbol());
+                publishMessage(topic.getSymbol(), msg);
+            }
+        }
+
+        List<Topic> currencyList = topicRepository.getTopicByService("currency-tracker-ws");
+
+        for(Topic topic : currencyList){
+            if(topic.getNumOfSubscribers() > 0) {
+                String msg = currencyTrackerAdapter
+                        .convert(topic.getSymbol().split("_")[0], topic.getSymbol().split("_")[1]);
+                publishMessage(topic.getSymbol(), msg);
+
+                msg = currencyTrackerAdapter
+                        .graph(topic.getSymbol().split("_")[0], topic.getSymbol().split("_")[1]);
                 publishMessage(topic.getSymbol(), msg);
             }
         }
