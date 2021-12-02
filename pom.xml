@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.stockx</groupId>
 	<artifactId>publish-manager-ws</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>publish-manager-ws</name>
 	<description>Responsible for the publishing of messages</description>
 	<properties>

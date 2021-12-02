@@ -4,6 +4,7 @@ com/stockx/publishmanagerws/PublishManagerWsApplication.class
 com/stockx/publishmanagerws/repository/TopicRepository.class
 com/stockx/publishmanagerws/adapters/MqttAdapter.class
 com/stockx/publishmanagerws/configurations/AppConfiguration.class
+com/stockx/publishmanagerws/adapters/CurrencyTrackerAdapter.class
 com/stockx/publishmanagerws/adapters/MarketIndexTrackerAdapter.class
 com/stockx/publishmanagerws/services/PublishManagerService.class
 com/stockx/publishmanagerws/entity/Topic.class

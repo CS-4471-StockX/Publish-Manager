@@ -1,4 +1,5 @@
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/services/PublishManagerService.java
+/home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/adapters/CurrencyTrackerAdapter.java
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/configurations/AppConfiguration.java
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/adapters/LiveStockTrackerAdapter.java
 /home/jwanger/Documents/CS4471/Publish-Manager/src/main/java/com/stockx/publishmanagerws/adapters/MarketIndexTrackerAdapter.java
