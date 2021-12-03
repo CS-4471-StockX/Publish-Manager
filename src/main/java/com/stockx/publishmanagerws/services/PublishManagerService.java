@@ -80,17 +80,14 @@ public class PublishManagerService {
 
     @Scheduled(initialDelay = 5000, fixedDelay = 10000)
     public void updateIndustryStockListings() {
-        publishMessage("Energy", industryStockTrackerAdapter.getIndustryStockBySector("Energy"));
-        publishMessage("Materials", industryStockTrackerAdapter.getIndustryStockBySector("Materials"));
-        publishMessage("Industrials", industryStockTrackerAdapter.getIndustryStockBySector("Industrials"));
-        publishMessage("Utilities", industryStockTrackerAdapter.getIndustryStockBySector("Utilities"));
-        publishMessage("Healthcare", industryStockTrackerAdapter.getIndustryStockBySector("Healthcare"));
-        publishMessage("Financials", industryStockTrackerAdapter.getIndustryStockBySector("Financials"));
-        publishMessage("ConsumerDiscretionary", industryStockTrackerAdapter.getIndustryStockBySector("ConsumerDiscretionary"));
-        publishMessage("ConsumerStaples", industryStockTrackerAdapter.getIndustryStockBySector("ConsumerStaples"));
-        publishMessage("InformationTechnology", industryStockTrackerAdapter.getIndustryStockBySector("InformationTechnology"));
-        publishMessage("CommunicationServices", industryStockTrackerAdapter.getIndustryStockBySector("CommunicationServices"));
-        publishMessage("RealEstate", industryStockTrackerAdapter.getIndustryStockBySector("RealEstate"));
+        List<Topic> sectorList = topicRepository.getTopicByService("industry-stock-listings-ws");
+
+        for(Topic topic : sectorList){
+            if(topic.getNumOfSubscribers() > 0) {
+                String msg = industryStockTrackerAdapter.getIndustryStockBySector(topic.getSymbol());
+                publishMessage(topic.getSymbol(), msg);
+            }
+        }
     }
 
     @Scheduled(cron = "0 * 15-21 * * *")
