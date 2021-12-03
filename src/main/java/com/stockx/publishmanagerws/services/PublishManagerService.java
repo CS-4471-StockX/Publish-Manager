@@ -31,7 +31,7 @@ public class PublishManagerService {
     @Autowired
     private CurrencyTrackerAdapter currencyTrackerAdapter;
 
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 10000)
     void updateSubscribedStocks(){
 
         List<Topic> liveStockList = topicRepository.getTopicByService("live-stock-tracker-ws");
@@ -78,7 +78,7 @@ public class PublishManagerService {
         }
     }
 
-    @Scheduled(initialDelay = 10000, fixedDelay = 30000)
+    @Scheduled(initialDelay = 5000, fixedDelay = 10000)
     public void updateIndustryStockListings() {
         publishMessage("Energy", industryStockTrackerAdapter.getIndustryStockBySector("Energy"));
         publishMessage("Materials", industryStockTrackerAdapter.getIndustryStockBySector("Materials"));
