@@ -37,13 +37,18 @@ public class PublishManagerService {
         List<Topic> liveStockList = topicRepository.getTopicByService("live-stock-tracker-ws");
 
         for(Topic topic : liveStockList){
+            System.out.println("Trying to deal with: "+topic.getSymbol());
             if(topic.getNumOfSubscribers() > 0) {
-                String msg = liveStockTrackerAdapter.stockQuote(topic.getSymbol());
-                publishMessage(topic.getSymbol(), msg);
+                try {
+                    String msg = liveStockTrackerAdapter.stockQuote(topic.getSymbol());
+                    publishMessage(topic.getSymbol(), msg);
 
-                msg = liveStockTrackerAdapter.stockGraphs(topic.getSymbol());
-                publishMessage(topic.getSymbol(), msg);
-
+                    msg = liveStockTrackerAdapter.stockGraphs(topic.getSymbol());
+                    publishMessage(topic.getSymbol(), msg);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         }
     }
